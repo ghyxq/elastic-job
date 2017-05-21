@@ -60,6 +60,7 @@ public class JobScheduler {
     
     private static final String JOB_FACADE_DATA_MAP_KEY = "jobFacade";
     
+    //外面传进来
     private final LiteJobConfiguration liteJobConfig;
     
     private final CoordinatorRegistryCenter regCenter;

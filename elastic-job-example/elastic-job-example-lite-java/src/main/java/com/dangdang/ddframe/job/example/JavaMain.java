@@ -41,33 +41,38 @@ import java.nio.file.attribute.PosixFilePermissions;
 
 public final class JavaMain {
     
-    private static final int EMBED_ZOOKEEPER_PORT = 4181;
+    private static final int EMBED_ZOOKEEPER_PORT = 2181;
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:" + EMBED_ZOOKEEPER_PORT;
     
     private static final String JOB_NAMESPACE = "elastic-job-example-lite-java";
     
     // switch to MySQL by yourself
-//    private static final String EVENT_RDB_STORAGE_DRIVER = "com.mysql.jdbc.Driver";
-//    private static final String EVENT_RDB_STORAGE_URL = "jdbc:mysql://localhost:3306/elastic_job_log";
+    private static final String EVENT_RDB_STORAGE_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String EVENT_RDB_STORAGE_URL = "jdbc:mysql://localhost:3306/elasticjob";
     
-    private static final String EVENT_RDB_STORAGE_DRIVER = "org.h2.Driver";
+    private static final String EVENT_RDB_STORAGE_USERNAME = "bespub";
     
-    private static final String EVENT_RDB_STORAGE_URL = "jdbc:h2:mem:job_event_storage";
+    private static final String EVENT_RDB_STORAGE_PASSWORD = "Huawei_123";
     
-    private static final String EVENT_RDB_STORAGE_USERNAME = "sa";
-    
-    private static final String EVENT_RDB_STORAGE_PASSWORD = "";
-    
+//    private static final String EVENT_RDB_STORAGE_DRIVER = "org.h2.Driver";
+//    
+//    private static final String EVENT_RDB_STORAGE_URL = "jdbc:h2:mem:job_event_storage";
+
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException {
     // CHECKSTYLE:ON
-        EmbedZookeeperServer.start(EMBED_ZOOKEEPER_PORT);
+     //   EmbedZookeeperServer.start(EMBED_ZOOKEEPER_PORT);
+    	
+    	//第一步用基本的配置拦截zk，通过curator连接，只是启动了连接了，创建了namespace
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
+        
+        //第一步设置数据源和用户名和密码
         JobEventConfiguration jobEventConfig = new JobEventRdbConfiguration(setUpEventTraceDataSource());
+        
         setUpSimpleJob(regCenter, jobEventConfig);
-        setUpDataflowJob(regCenter, jobEventConfig);
-        setUpScriptJob(regCenter, jobEventConfig);
+//        setUpDataflowJob(regCenter, jobEventConfig);
+//        setUpScriptJob(regCenter, jobEventConfig);
     }
     
     private static CoordinatorRegistryCenter setUpRegistryCenter() {
@@ -86,6 +91,7 @@ public final class JavaMain {
         return result;
     }
     
+    //jobEventConfig 中有个DataSource和一个创建listener
     private static void setUpSimpleJob(final CoordinatorRegistryCenter regCenter, final JobEventConfiguration jobEventConfig) {
         JobCoreConfiguration coreConfig = JobCoreConfiguration.newBuilder("javaSimpleJob", "0/5 * * * * ?", 3).shardingItemParameters("0=Beijing,1=Shanghai,2=Guangzhou").build();
         SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(coreConfig, JavaSimpleJob.class.getCanonicalName());
