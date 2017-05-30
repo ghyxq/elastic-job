@@ -103,6 +103,7 @@ public class JobScheduler {
      * 初始化作业.
      */
     public void init() {
+    	//这里updateJobConfiguration更新操作第一次就会在zk上创建namespace
         LiteJobConfiguration liteJobConfigFromRegCenter = schedulerFacade.updateJobConfiguration(liteJobConfig);
         JobRegistry.getInstance().setCurrentShardingTotalCount(liteJobConfigFromRegCenter.getJobName(), liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getShardingTotalCount());
         JobScheduleController jobScheduleController = new JobScheduleController(

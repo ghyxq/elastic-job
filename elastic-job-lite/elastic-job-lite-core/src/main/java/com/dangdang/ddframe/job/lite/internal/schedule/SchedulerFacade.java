@@ -100,6 +100,7 @@ public final class SchedulerFacade {
      * @return 更新后的作业配置
      */
     public LiteJobConfiguration updateJobConfiguration(final LiteJobConfiguration liteJobConfig) {
+    	//这里的persist会调用接口创建namespace，多次则可以创建目录
         configService.persist(liteJobConfig);
         return configService.load(false);
     }

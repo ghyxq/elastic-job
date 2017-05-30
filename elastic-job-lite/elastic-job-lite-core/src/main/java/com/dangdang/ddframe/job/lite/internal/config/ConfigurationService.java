@@ -67,13 +67,16 @@ public final class ConfigurationService {
      * @param liteJobConfig 作业配置
      */
     public void persist(final LiteJobConfiguration liteJobConfig) {
-        checkConflictJob(liteJobConfig);
+    	//其中调用接口在zk上创建目录
+         checkConflictJob(liteJobConfig);
         if (!jobNodeStorage.isJobNodeExisted(ConfigurationNode.ROOT) || liteJobConfig.isOverwrite()) {
-            jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
+           //这里会更新路径信息，如果没有改路径则创建一个，如果有的话则直接更新内容，主要的config中的配置信息就是在这里第一更新的
+        	jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
         }
     }
     
     private void checkConflictJob(final LiteJobConfiguration liteJobConfig) {
+    	//其中调用接口在zk上创建目录
         Optional<LiteJobConfiguration> liteJobConfigFromZk = find();
         if (liteJobConfigFromZk.isPresent() && !liteJobConfigFromZk.get().getTypeConfig().getJobClass().equals(liteJobConfig.getTypeConfig().getJobClass())) {
             throw new JobConfigurationException("Job conflict with register center. The job '%s' in register center's class is '%s', your job class is '%s'", 
@@ -82,6 +85,7 @@ public final class ConfigurationService {
     }
     
     private Optional<LiteJobConfiguration> find() {
+    	//isJobNodeExisted会在zk上创建接口
         if (!jobNodeStorage.isJobNodeExisted(ConfigurationNode.ROOT)) {
             return Optional.absent();
         }

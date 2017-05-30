@@ -53,7 +53,7 @@ public final class JobNodeStorage {
     }
     
     /**
-     * 判断作业节点是否存在.
+     * 判断作业节点是否存在.如果不存在会创建该接口
      * 
      * @param node 作业节点名称
      * @return 作业节点是否存在

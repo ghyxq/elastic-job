@@ -49,6 +49,7 @@ public final class JobScheduleController {
      */
     public void scheduleJob(final String cron) {
         try {
+        	//判断sheduler中是否已经有了该任务，如果有了已经任务，已经在调度了，就不需要在重新调度
             if (!scheduler.checkExists(jobDetail.getKey())) {
                 scheduler.scheduleJob(jobDetail, createTrigger(cron));
             }
