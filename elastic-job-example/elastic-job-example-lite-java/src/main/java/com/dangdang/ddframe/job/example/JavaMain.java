@@ -64,7 +64,7 @@ public final class JavaMain {
     // CHECKSTYLE:ON
      //   EmbedZookeeperServer.start(EMBED_ZOOKEEPER_PORT);
     	
-    	//第一步用基本的配置拦截zk，通过curator连接，只是启动了连接了，创建了namespace
+    	//第一步用基本的配置拦截zk，通过curator连接，只是启动了连接
         CoordinatorRegistryCenter regCenter = setUpRegistryCenter();
         
         //第一步设置数据源和用户名和密码
