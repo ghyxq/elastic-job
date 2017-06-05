@@ -72,17 +72,17 @@ public final class ListenerManager {
     }
     
     /**
-     * 开启所有监听器.
+     * 开启所有监听器.这里只是对应的在的路径上设置监听器，但是并没有创建对应的路径
      */
     public void startAllListeners() {
         electionListenerManager.start();
         shardingListenerManager.start();
         failoverListenerManager.start();
         monitorExecutionListenerManager.start();
-        shutdownListenerManager.start();
+         shutdownListenerManager.start();
         triggerListenerManager.start();
         rescheduleListenerManager.start();
         guaranteeListenerManager.start();
         jobNodeStorage.addConnectionStateListener(regCenterConnectionStateListener);
-    }
+     }
 }

@@ -51,6 +51,7 @@ public final class LeaderService {
      */
     public void electLeader() {
         log.debug("Elect a new leader now.");
+        //执行选举，会在election/latch下创建临时叶子节点，顺序选取主节点，并回调LeaderElectionExecutionCallback的execute方法
         jobNodeStorage.executeInLeader(LeaderNode.LATCH, new LeaderElectionExecutionCallback());
         log.debug("Leader election completed.");
     }
@@ -60,6 +61,7 @@ public final class LeaderService {
      * 
      * <p>
      * 如果主节点正在选举中而导致取不到主节点, 则阻塞至主节点选举完成再返回.
+     * leader/election/instance下的ip即为主节点的信息
      * </p>
      * 
      * @return 当前节点是否是主节点
@@ -77,7 +79,7 @@ public final class LeaderService {
     
     /**
      * 判断当前节点是否是主节点.
-     *
+     *leader/election/instance中的ip即为主节点的信息，instance节点中的数据即是主节点的ip
      * @return 当前节点是否是主节点
      */
     public boolean isLeader() {
@@ -86,7 +88,7 @@ public final class LeaderService {
     
     /**
      * 判断是否已经有主节点.
-     * 
+     * leader/election/instance下的ip即为主节点的信息
      * @return 是否已经有主节点
      */
     public boolean hasLeader() {
@@ -106,6 +108,7 @@ public final class LeaderService {
         @Override
         public void execute() {
             if (!hasLeader()) {
+            	//这里如果该节点被选举为主节点，则会调用该方法，这个方法则在election下创建一个instance的临时节点，并将当前实例的信息写入到该节点下
                 jobNodeStorage.fillEphemeralJobNode(LeaderNode.INSTANCE, JobRegistry.getInstance().getJobInstance(jobName).getJobInstanceId());
             }
         }

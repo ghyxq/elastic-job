@@ -26,8 +26,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 作业注册表.
+ * 作业注册表.主要使get和set，还有一个 shutdown(final String jobName)动作，通过将map中的值remove掉，同时将对应的value做清理动作 <br>
+ * 其中主要包含了几个map，key是string，一般是任务的name，即jobName,value对应着JobScheduleController，CoordinatorRegistryCenter，JobInstance <br>
+ * private Map<String, Boolean> jobRunningMap ，Map<String, Integer> currentShardingTotalCountMap <br>
  * 
+ * private static volatile JobRegistry instance; <br>
+     
+    private Map<String, JobScheduleController> schedulerMap = new ConcurrentHashMap<>(); <br>
+    
+    private Map<String, CoordinatorRegistryCenter> regCenterMap = new ConcurrentHashMap<>(); <br>
+    
+    private Map<String, JobInstance> jobInstanceMap = new ConcurrentHashMap<>(); <br>
+    
+    private Map<String, Boolean> jobRunningMap = new ConcurrentHashMap<>(); <br>
+    
+    private Map<String, Integer> currentShardingTotalCountMap = new ConcurrentHashMap<>(); <br>
  * @author zhangliang
  * @author caohao
  */
@@ -48,7 +61,7 @@ public final class JobRegistry {
     
     /**
      * 获取作业注册表实例.
-     * 
+     * 单例模式
      * @return 作业注册表实例
      */
     public static JobRegistry getInstance() {
@@ -159,7 +172,7 @@ public final class JobRegistry {
     
     /**
      * 终止任务调度.
-     * 
+     * 这里的jobName在namespace，不会重复，一个任务是一个名称
      * @param jobName 作业名称
      */
     public void shutdown(final String jobName) {

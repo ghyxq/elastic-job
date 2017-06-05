@@ -41,5 +41,5 @@ public abstract class AbstractListenerManager {
     
     protected void addDataListener(final TreeCacheListener listener) {
         jobNodeStorage.addDataListener(listener);
-    }
+     }
 }

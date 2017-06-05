@@ -45,12 +45,13 @@ public final class ServerService {
     }
     
     /**
-     * 持久化作业服务器上线信息.
-     * 
+     * 持久化作业服务器上线信息.？？？这里的JobRegistry中的实例map到底存放的是一个实例还是多个实例？？
+     * 判断jobname对应的任务实例是否关闭，没有关闭的话则通过jobNodeStorage，根据serverNode获取节点server/%s,在zk上创建该节点
      * @param enabled 作业是否启用
      */
     public void persistOnline(final boolean enabled) {
         if (!JobRegistry.getInstance().isShutdown(jobName)) {
+        	//servers/192.168.64.1，是一个持久化节点，客户端关掉，节点仍然存在
             jobNodeStorage.fillJobNode(serverNode.getServerNode(JobRegistry.getInstance().getJobInstance(jobName).getIp()), enabled ? "" : ServerStatus.DISABLED.name());
         }
     }
@@ -80,6 +81,12 @@ public final class ServerService {
         return isEnableServer(ip) && hasOnlineInstances(ip);
     }
     
+    /**
+     * 判断作业服务器是否可用.
+     * 判断instance下是否有实例的名称以该ip开头，有的话则说明有在线实例
+     * @param ip 作业服务器IP地址
+     * @return 作业服务器是否可用
+     */
     private boolean hasOnlineInstances(final String ip) {
         for (String each : jobNodeStorage.getJobNodeChildrenKeys(InstanceNode.ROOT)) {
             if (each.startsWith(ip)) {

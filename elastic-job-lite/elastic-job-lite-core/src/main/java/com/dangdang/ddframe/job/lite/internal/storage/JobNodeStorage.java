@@ -122,7 +122,7 @@ public final class JobNodeStorage {
         
     /**
      * 填充节点数据.
-     *
+     *servers/192.168.64.1
      * @param node 作业节点名称
      * @param value 作业节点数据值
      */
@@ -185,7 +185,7 @@ public final class JobNodeStorage {
      */
     public void executeInLeader(final String latchNode, final LeaderExecutionCallback callback) {
         try (LeaderLatch latch = new LeaderLatch(getClient(), jobNodePath.getFullPath(latchNode))) {
-            latch.start();
+            latch.start();//这里会在javaSimpleJob/leader/election/latch/_c_bdae1ae8-5721-42fa-bc**创建一个叶子节点，作为锁进行选举
             latch.await();
             callback.execute();
         //CHECKSTYLE:OFF

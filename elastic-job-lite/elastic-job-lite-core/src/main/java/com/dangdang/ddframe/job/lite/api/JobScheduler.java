@@ -50,6 +50,7 @@ import java.util.Properties;
 
 /**
  * 作业调度器.
+ * 其中适配了quartz的scheduler和quartz的properties配置
  * 
  * @author zhangliang
  * @author caohao
@@ -60,9 +61,10 @@ public class JobScheduler {
     
     private static final String JOB_FACADE_DATA_MAP_KEY = "jobFacade";
     
-    //外面传进来
+    //外面传进来litejob基本配置
     private final LiteJobConfiguration liteJobConfig;
     
+    //注册中心的interface类，实现类为ZookeeperRegistryCenter
     private final CoordinatorRegistryCenter regCenter;
     
     // TODO 为测试使用,测试用例不能反复new monitor service,以后需要把MonitorService重构为单例

@@ -24,7 +24,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 简单作业配置.
+ * SimpleJobConfiguration implements JobTypeConfiguration <br>
+ * 其中JobTypeConfiguration是接口，三种作业类型都继承与它。
+ * 简单作业配置，主要配置simplejob的一些简单属性. <br>
+ * 其中包含了JobCoreConfiguration，jobtype 还有jobclass，
  * 
  * @author caohao
  * @author zhangliang

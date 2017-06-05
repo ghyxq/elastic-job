@@ -25,8 +25,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Lite作业配置.
- * 
+ * Lite作业配置. <br>
+ * 其中包括 JobTypeConfiguration 
  * @author caohao
  * @author zhangliang
  */

@@ -20,8 +20,9 @@ package com.dangdang.ddframe.job.reg.base;
 import java.util.List;
 
 /**
+ * CoordinatorRegistryCenter extends RegistryCenter <br>
  * 用于协调分布式服务的注册中心.
- * 
+ * 其中是对zk简单的操作，extends RegistryCenter，RegistryCenter是注册中心，其中也就是有init close等基本方法接口的定义.
  * @author zhangliang
  */
 public interface CoordinatorRegistryCenter extends RegistryCenter {

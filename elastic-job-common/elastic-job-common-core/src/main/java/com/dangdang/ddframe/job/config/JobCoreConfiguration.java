@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * 作业核心配置.
+ * 其中主要配置作业的一些相关属性，包括 jobname，cron，shardingTotalCount ,JobProperties等
  * 
  * @author zhangliang
  */

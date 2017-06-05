@@ -34,7 +34,18 @@ import java.util.List;
 
 /**
  * 为调度器提供内部服务的门面类.
- * 
+ * ShedulerFacade包含包含所有的服务，通过各个服务进行主节点选举，服务器信息注册，配置信息更新。 <br>
+ * 主要包含的服务有：<br>
+ * ConfigurationService <br>
+ *  LeaderService <br>
+ *  ServerService <br>
+ *  InstanceService <br>
+ * ShardingService <br>
+ *  ExecutionService<br>
+ *   MonitorService <br>
+ *   ReconcileService等<br>
+ *   还有一个监听器ListenerManager管理者
+ *  
  * @author zhangliang
  */
 public final class SchedulerFacade {
@@ -112,7 +123,7 @@ public final class SchedulerFacade {
      */
     public void registerStartUpInfo(final boolean enabled) {
         listenerManager.startAllListeners();
-        leaderService.electLeader();
+        leaderService.electLeader();//这里会选举一个主节点，通过在latch下创建一个临时节点来争夺锁，如果没有该节点就会创建一个节点instangce节点，
         serverService.persistOnline(enabled);
         instanceService.persistOnline();
         shardingService.setReshardingFlag();
@@ -126,7 +137,8 @@ public final class SchedulerFacade {
      * 终止作业调度.
      */
     public void shutdownInstance() {
-        if (leaderService.isLeader()) {
+        if (leaderService.isLeader(
+        		)) {
             leaderService.removeLeader();
         }
         monitorService.close();

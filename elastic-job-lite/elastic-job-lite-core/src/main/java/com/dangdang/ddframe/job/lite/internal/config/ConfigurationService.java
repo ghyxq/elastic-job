@@ -27,7 +27,7 @@ import com.google.common.base.Optional;
 
 /**
  * 弹性化分布式作业配置服务.
- * 
+ * 其中主要包含了一个属性：JobNodeStorage
  * @author zhangliang
  * @author caohao
  */
@@ -67,23 +67,36 @@ public final class ConfigurationService {
      * @param liteJobConfig 作业配置
      */
     public void persist(final LiteJobConfiguration liteJobConfig) {
-    	//其中调用接口在zk上创建目录
+    	//其中调用接口在zk上创建目录，
          checkConflictJob(liteJobConfig);
+         
+         //如果作业实现类名称一致，则可以将相同的配置进行更新.
         if (!jobNodeStorage.isJobNodeExisted(ConfigurationNode.ROOT) || liteJobConfig.isOverwrite()) {
            //这里会更新路径信息，如果没有改路径则创建一个，如果有的话则直接更新内容，主要的config中的配置信息就是在这里第一更新的
         	jobNodeStorage.replaceJobNode(ConfigurationNode.ROOT, LiteJobConfigurationGsonFactory.toJson(liteJobConfig));
         }
     }
     
+    /**
+     * 检查传入的配置和zk上的节点配置是否相同，主要检查jobclass是否一致.
+     * 
+     * @param liteJobConfig 作业配置
+     */
     private void checkConflictJob(final LiteJobConfiguration liteJobConfig) {
-    	//其中调用接口在zk上创建目录
+    	//其中会调用接口在zk上创建目录
         Optional<LiteJobConfiguration> liteJobConfigFromZk = find();
+        
+        //如果liteJobConfigFromZk非空，并且liteJobConfigFromZk中的jobclass和传入的配置不相同的话则抛异常
         if (liteJobConfigFromZk.isPresent() && !liteJobConfigFromZk.get().getTypeConfig().getJobClass().equals(liteJobConfig.getTypeConfig().getJobClass())) {
             throw new JobConfigurationException("Job conflict with register center. The job '%s' in register center's class is '%s', your job class is '%s'", 
                     liteJobConfig.getJobName(), liteJobConfigFromZk.get().getTypeConfig().getJobClass(), liteJobConfig.getTypeConfig().getJobClass());
         }
     }
     
+    /**
+     * 从zk上的config节点查询是否存在config节点，如果存在则返回配置信息Optional<LiteJobConfiguration>
+     * 
+     */
     private Optional<LiteJobConfiguration> find() {
     	//isJobNodeExisted会在zk上创建接口
         if (!jobNodeStorage.isJobNodeExisted(ConfigurationNode.ROOT)) {

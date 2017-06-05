@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.job.reg.zookeeper;
 
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import com.dangdang.ddframe.job.reg.base.RegistryCenter;
 import com.dangdang.ddframe.job.reg.exception.RegExceptionHandler;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -48,7 +49,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 基于Zookeeper的注册中心.
- * 
+ * 对zk进行操作的实际类，其继承CoordinatorRegistryCenter接口
+ * ZookeeperRegistryCenter implements CoordinatorRegistryCenter
+ * CoordinatorRegistryCenter extends RegistryCenter，其中RegistryCenter也是zk操作的interface定义
  * @author zhangliang
  */
 @Slf4j
