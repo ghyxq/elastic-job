@@ -30,7 +30,7 @@ import org.quartz.TriggerKey;
 
 /**
  * 作业调度控制器.
- * 
+ * 其中包括一个scheduler和jobdetail，相当于一个adapter,这里需要学下quartz中的scheduler
  * @author zhangliang
  */
 @RequiredArgsConstructor

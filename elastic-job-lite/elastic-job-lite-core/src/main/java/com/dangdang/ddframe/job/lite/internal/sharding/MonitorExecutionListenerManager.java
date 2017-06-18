@@ -25,7 +25,7 @@ import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
 
 /**
- * 幂等性监听管理器.
+ * 幂等性监听管理器.f(f(x))=f（x）
  * 
  * @author zhangliang
  */

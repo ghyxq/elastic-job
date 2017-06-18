@@ -29,6 +29,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
 
 /**
  * 分片监听管理器.
+ * 判断是否需要重新分片
  * 
  * @author zhangliang
  */
@@ -59,6 +60,12 @@ public final class ShardingListenerManager extends AbstractListenerManager {
         addDataListener(new ListenServersChangedJobListener());
     }
     
+    /**
+     * 判断当前分片是否等于当前节点记录的分片数，如果不一样的话需要重新设置分片标记，进行重新分片，然后重新更新当前节点的分片数，因为重新分片也是根据config下的设置进行
+     * 分片的
+     * 
+     * @author zhangliang
+     */
     class ShardingTotalCountChangedJobListener extends AbstractJobListener {
         
         @Override
@@ -75,6 +82,11 @@ public final class ShardingListenerManager extends AbstractListenerManager {
     
     class ListenServersChangedJobListener extends AbstractJobListener {
         
+    	  /**
+         * 如果当前实例没有shutdown并且判断是否是实例节点数据更新NODE_UPDATED or 还是server节点变化，都会重新触发分片设置，
+         * 
+         * @author zhangliang
+         */
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
             if (!JobRegistry.getInstance().isShutdown(jobName) && (isInstanceChange(eventType, path) || isServerChange(path))) {

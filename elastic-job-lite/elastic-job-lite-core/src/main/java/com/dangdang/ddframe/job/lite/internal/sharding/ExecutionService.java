@@ -50,12 +50,12 @@ public final class ExecutionService {
         
     /**
      * 注册作业启动信息.
-     * 
+     * 注册分片作业节点，即在javaSimpleJob/sharding创建分片信息，每个分片即为一个永久节点
      * @param shardingContexts 分片上下文
      */
     public void registerJobBegin(final ShardingContexts shardingContexts) {
         JobRegistry.getInstance().setJobRunning(jobName, true);
-        if (!configService.load(true).isMonitorExecution()) {
+        if (!configService.load(true).isMonitorExecution()) {//这里可能的意思是判断没有监听，则可以直接返回，不用创建分片节点
             return;
         }
         for (int each : shardingContexts.getShardingItemParameters().keySet()) {
@@ -69,12 +69,14 @@ public final class ExecutionService {
      * @param shardingContexts 分片上下文
      */
     public void registerJobCompleted(final ShardingContexts shardingContexts) {
-        JobRegistry.getInstance().setJobRunning(jobName, false);
+        JobRegistry.getInstance().setJobRunning(jobName, false);//设置jobname实例没有运行
         if (!configService.load(true).isMonitorExecution()) {
             return;
         }
         for (int each : shardingContexts.getShardingItemParameters().keySet()) {
-            jobNodeStorage.removeJobNodeIfExisted(ShardingNode.getRunningNode(each));
+            ///javaSimpleJob/sharding/0/instance下的数据都是ip+pid
+        	jobNodeStorage.removeJobNodeIfExisted(ShardingNode.getRunningNode(each));
+            
         }
     }
     
@@ -98,7 +100,7 @@ public final class ExecutionService {
     
     /**
      * 判断分片项中是否还有执行中的作业.
-     *
+     *主要在javaSimple/sharding/0/instance下 "sharding/%s/running"
      * @param items 需要判断的分片项列表
      * @return 分片项中是否还有执行中的作业
      */
@@ -149,7 +151,7 @@ public final class ExecutionService {
     
     /**
      * 设置任务被错过执行的标记.
-     *
+     *直接在sharding/%s/misfire"创建节点，说明哪个任务被错过
      * @param items 需要设置错过执行的任务分片项
      */
     public void setMisfire(final Collection<Integer> items) {
@@ -176,7 +178,7 @@ public final class ExecutionService {
     
     /**
      * 清除任务被错过执行的标记.
-     * 
+     * 清除sharding/%s/misfire"下的分片节点
      * @param items 需要清除错过执行的任务分片项
      */
     public void clearMisfire(final Collection<Integer> items) {

@@ -37,7 +37,7 @@ public final class JobInstance {
     private static final String DELIMITER = "@-@";
     
     /**
-     * 作业实例主键.
+     * 作业实例主键，构造的时候就初始化了jobInstanceId.
      */
     private final String jobInstanceId;
     

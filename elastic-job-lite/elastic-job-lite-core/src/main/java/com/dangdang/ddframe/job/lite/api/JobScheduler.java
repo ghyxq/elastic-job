@@ -50,6 +50,7 @@ import java.util.Properties;
 
 /**
  * 作业调度器.
+ * 具体的调度使用JobScheduleController，这个JobScheduleController相当于一个adapter，封装了quartz中的调度器
  * 其中适配了quartz的scheduler和quartz的properties配置
  * 
  * @author zhangliang
@@ -110,14 +111,20 @@ public class JobScheduler {
         JobRegistry.getInstance().setCurrentShardingTotalCount(liteJobConfigFromRegCenter.getJobName(), liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getShardingTotalCount());
         JobScheduleController jobScheduleController = new JobScheduleController(
                 createScheduler(), createJobDetail(liteJobConfigFromRegCenter.getTypeConfig().getJobClass()), liteJobConfigFromRegCenter.getJobName());
+        
+        //这个方法会调用注册类中添加treecache监听的方法，监听该任务treecache
         JobRegistry.getInstance().registerJob(liteJobConfigFromRegCenter.getJobName(), jobScheduleController, regCenter);
         //下面的方法，启动所有服务
         schedulerFacade.registerStartUpInfo(!liteJobConfigFromRegCenter.isDisabled());
         jobScheduleController.scheduleJob(liteJobConfigFromRegCenter.getTypeConfig().getCoreConfig().getCron());
     }
-    
+    //可以查看这里的JobBuilder.newJob(LiteJob.class)，这里的LiteJob中的有个 JobExecutorFactory.getJobExecutor(elasticJob, jobFacade).execute()，会根据elasticJob返回对应的执行器
     private JobDetail createJobDetail(final String jobClass) {
         JobDetail result = JobBuilder.newJob(LiteJob.class).withIdentity(liteJobConfig.getJobName()).build();
+        
+        result.getJobDataMap().put("test1", "test1chuanru");
+        result.getJobDataMap().put("test2", "test2chuanru");
+
         result.getJobDataMap().put(JOB_FACADE_DATA_MAP_KEY, jobFacade);
         Optional<ElasticJob> elasticJobInstance = createElasticJobInstance();
         if (elasticJobInstance.isPresent()) {
@@ -142,7 +149,7 @@ public class JobScheduler {
             StdSchedulerFactory factory = new StdSchedulerFactory();
             factory.initialize(getBaseQuartzProperties());
             result = factory.getScheduler();
-            //添加触发器监听器，当任务要执行的时候会触发监听器相关操作
+            //添加触发器监听器，当任务要执行的时候会触发监听器相关操作，查看详细操作，如何添加监听
             result.getListenerManager().addTriggerListener(schedulerFacade.newJobTriggerListener());
         } catch (final SchedulerException ex) {
             throw new JobSystemException(ex);

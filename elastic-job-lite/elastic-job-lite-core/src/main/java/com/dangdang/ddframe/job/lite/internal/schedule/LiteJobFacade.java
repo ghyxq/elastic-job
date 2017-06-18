@@ -43,7 +43,7 @@ import java.util.List;
 
 /**
  * 为作业提供内部服务的门面类.
- * 
+ * 对job设置基本的操作，比如加载配置，检查执行节点是否过期。主要是分片服务，执行服务，还有失效服务
  * @author zhangliang
  */
 @Slf4j

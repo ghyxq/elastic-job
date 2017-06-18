@@ -25,8 +25,8 @@ import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent.Type;
 
 /**
- * 运行实例关闭监听管理器.
- * 
+ * 运行实例关闭监听管理器.当zk上节点发生变化的时候出发该节点
+ * 当任务实例被关闭的时候就停止本地的实例schedulerFacade.shutdownInstance();
  * @author zhangliang
  */
 public final class ShutdownListenerManager extends AbstractListenerManager {

@@ -74,7 +74,7 @@ public final class JavaMain {
 //        setUpDataflowJob(regCenter, jobEventConfig);
 //        setUpScriptJob(regCenter, jobEventConfig);
     }
-    
+    //通过两步建立连接，第一配置基本的配置类ZookeeperConfiguration-设置基本的配置信息；第二通过注册中心，进行初始化连接
     private static CoordinatorRegistryCenter setUpRegistryCenter() {
         ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(ZOOKEEPER_CONNECTION_STRING, JOB_NAMESPACE);
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);

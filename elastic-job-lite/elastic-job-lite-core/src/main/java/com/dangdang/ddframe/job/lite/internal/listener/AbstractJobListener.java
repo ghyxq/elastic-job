@@ -26,7 +26,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
 /**
  * 作业注册中心的监听器.
- * 
+ * 这里的childEvent中又调用了datachanged这是一个设计模式：类似是模板模式，定义了childEvent箕斗，然后里面具体的datachanged可以自行实例化
  * @author zhangliang
  */
 public abstract class AbstractJobListener implements TreeCacheListener {

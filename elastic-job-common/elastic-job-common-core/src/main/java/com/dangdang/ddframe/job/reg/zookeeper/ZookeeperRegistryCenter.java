@@ -68,7 +68,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     public ZookeeperRegistryCenter(final ZookeeperConfiguration zkConfig) {
         this.zkConfig = zkConfig;
     }
-    
+    //这里建立了zk的连接
     @Override
     public void init() {
         log.debug("Elastic job: zookeeper registry center init, server lists is: {}.", zkConfig.getServerLists());

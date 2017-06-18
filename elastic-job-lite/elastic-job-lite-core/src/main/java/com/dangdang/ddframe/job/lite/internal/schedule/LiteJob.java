@@ -21,8 +21,16 @@ public final class LiteJob implements Job {
     @Setter
     private JobFacade jobFacade;
     
+    @Setter
+    private String test1;
+    
+    @Setter
+    private String test2;
+    
+    
     @Override
     public void execute(final JobExecutionContext context) throws JobExecutionException {
         JobExecutorFactory.getJobExecutor(elasticJob, jobFacade).execute();
+        System.out.println(test1+"  "+test2);
     }
 }

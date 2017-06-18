@@ -40,6 +40,7 @@ public final class ListenerManager {
     
     private final JobNodeStorage jobNodeStorage;
     
+    //主要负责选举，当节点处于选举过程的时候参加选举
     private final ElectionListenerManager electionListenerManager;
     
     private final ShardingListenerManager shardingListenerManager;

@@ -77,7 +77,7 @@ public final class ShardingService {
     }
     
     /**
-     * 设置需要重新分片的标记.
+     * 设置需要重新分片的标记.leader/sharding/necessary"
      */
     public void setReshardingFlag() {
         jobNodeStorage.createJobNodeIfNeeded(ShardingNode.NECESSARY);
@@ -94,7 +94,7 @@ public final class ShardingService {
     
     /**
      * 如果需要分片且当前节点为主节点, 则作业分片.
-     * 
+     * 如果没有可用的实例，则直接返回，如果不是当前实例不是主节点，这等待一会直接诶返回
      * <p>
      * 如果当前无可用节点则不分片.
      * </p>
@@ -104,11 +104,12 @@ public final class ShardingService {
         if (!isNeedSharding() || availableJobInstances.isEmpty()) {
             return;
         }
+        //查看是否是主节点，如果不是，则等待数秒
         if (!leaderService.isLeaderUntilBlock()) {
             blockUntilShardingCompleted();
             return;
         }
-        waitingOtherJobCompleted();
+        waitingOtherJobCompleted();//如果还有执行中的节点，则等待一会
         LiteJobConfiguration liteJobConfig = configService.load(false);
         int shardingTotalCount = liteJobConfig.getTypeConfig().getCoreConfig().getShardingTotalCount();
         log.debug("Job '{}' sharding begin.", jobName);
@@ -133,13 +134,14 @@ public final class ShardingService {
         }
     }
     
+    //需要debug下这个函数
     private void resetShardingInfo(final int shardingTotalCount) {
         for (int i = 0; i < shardingTotalCount; i++) {
             jobNodeStorage.removeJobNodeIfExisted(ShardingNode.getInstanceNode(i));
             jobNodeStorage.createJobNodeIfNeeded(ShardingNode.ROOT + "/" + i);
         }
         int actualShardingTotalCount = jobNodeStorage.getJobNodeChildrenKeys(ShardingNode.ROOT).size();
-        if (actualShardingTotalCount > shardingTotalCount) {
+        if (actualShardingTotalCount > shardingTotalCount) {//如果实际的分区信息小于sharding下的节点个数，则需要将多于的删除
             for (int i = shardingTotalCount; i < actualShardingTotalCount; i++) {
                 jobNodeStorage.removeJobNodeIfExisted(ShardingNode.ROOT + "/" + i);
             }
@@ -148,16 +150,18 @@ public final class ShardingService {
     
     /**
      * 获取作业运行实例的分片项集合.
-     *
+     * sharding/%s/instance"通过jobNodeStorage获取该节点的信息，如果等于当前实例的instanceid则加入list，同属于一个
      * @param jobInstanceId 作业运行实例主键
      * @return 作业运行实例的分片项集合
      */
     public List<Integer> getShardingItems(final String jobInstanceId) {
         JobInstance jobInstance = new JobInstance(jobInstanceId);
+        //根据任务实例id创建一个新的，如果该实例的ip不可用在severs下，则反馈空的分区项集合
         if (!serverService.isAvailableServer(jobInstance.getIp())) {
             return Collections.emptyList();
         }
         List<Integer> result = new LinkedList<>();
+        //"sharding/%s/instance"通过jobNodeStorage获取该节点的信息，如果等于当前实例的instanceid则加入list，同属于一个
         int shardingTotalCount = configService.load(true).getTypeConfig().getCoreConfig().getShardingTotalCount();
         for (int i = 0; i < shardingTotalCount; i++) {
             if (jobInstance.getJobInstanceId().equals(jobNodeStorage.getJobNodeData(ShardingNode.getInstanceNode(i)))) {
@@ -181,7 +185,7 @@ public final class ShardingService {
     
     /**
      * 查询是包含有分片节点的不在线服务器.
-     * 
+     * 通过获取instance下的所有实例名称，然后通过判断这个实例集合中是否包含分片中正在运行的ip，如果没有，则说明这个节点在instance下有，但是没有执行任务
      * @return 是包含有分片节点的不在线服务器
      */
     public boolean hasShardingInfoInOfflineServers() {

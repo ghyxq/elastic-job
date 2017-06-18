@@ -79,6 +79,7 @@ public final class JobProperties {
     
     /**
      * 作业属性枚举.
+     * 这里只是一个枚举，必须先定义枚举值（最后一个需要在后面添加一个分号），然后在写相应的方法
      */
     @RequiredArgsConstructor
     @Getter
